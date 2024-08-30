@@ -3,6 +3,7 @@
 namespace Teguh02\FilamentDbSync;
 
 use Illuminate\Support\ServiceProvider;
+
 class FilamentDbSyncServiceProvider extends ServiceProvider
 {
     public function register(): void

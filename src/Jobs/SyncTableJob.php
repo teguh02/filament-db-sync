@@ -2,20 +2,25 @@
 
 namespace Teguh02\FilamentDbSync\Jobs;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class SyncTableJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
 
     public $timeout = 0; // maximum number of seconds the job is allowed to run
+
     public $tries = 3; // maximum number of attempts
+
     public $maxExceptions = 3; // maximum number of exceptions to handle
+
     public $backoff = 3; // number of seconds to wait before retrying the job
 
     protected $table;
@@ -49,6 +54,6 @@ class SyncTableJob implements ShouldQueue
 
     protected function escapeCSVValue($value)
     {
-        return str_replace(["'", "\n", "\r"], ["''", "\\n", "\\r"], $value);
+        return str_replace(["'", "\n", "\r"], ["''", '\\n', '\\r'], $value);
     }
 }

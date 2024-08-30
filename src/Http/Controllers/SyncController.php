@@ -2,13 +2,13 @@
 
 namespace Teguh02\FilamentDbSync\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Queue;
-use Teguh02\FilamentDbSync\Jobs\SyncTableJob;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Schema;
+use Teguh02\FilamentDbSync\Jobs\SyncTableJob;
 
 class SyncController extends Controller
 {
@@ -45,8 +45,9 @@ class SyncController extends Controller
         $data = array_map('str_getcsv', $lines);
 
         DB::beginTransaction();
+
         try {
-            if (!Schema::hasTable($table)) {
+            if (! Schema::hasTable($table)) {
                 Schema::create($table, function ($tableSchema) use ($header) {
                     foreach ($header as $column) {
                         $tableSchema->string($column)->nullable();
@@ -61,6 +62,7 @@ class SyncController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
 

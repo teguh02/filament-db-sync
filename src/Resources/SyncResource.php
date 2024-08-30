@@ -3,8 +3,8 @@
 namespace Teguh02\FilamentDbSync\Resources;
 
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Tables\Table;
 use Teguh02\FilamentDbSync\Resources\SyncResource\Pages\IndexDatabaseSync;
 
 class SyncResource extends Resource
@@ -52,7 +52,7 @@ class SyncResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => IndexDatabaseSync::route('/')
+            'index' => IndexDatabaseSync::route('/'),
         ];
     }
 }
