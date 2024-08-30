@@ -2,14 +2,18 @@
 
 namespace Teguh02\FilamentDbSync\Resources;
 
+use Filament\Tables\Actions\ViewAction;
 use Filament\Forms\Form;
+use Filament\Forms;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Teguh02\FilamentDbSync\Resources\SyncResource\Pages\IndexDatabaseSync;
-
+use Teguh02\FilamentDbSync\Models\DbSync;
 class SyncResource extends Resource
 {
-    // protected static ?string $model = User::class;
+    protected static ?string $model = DbSync::class;
 
     protected static ?string $navigationGroup = 'Settings';
 
@@ -24,7 +28,29 @@ class SyncResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('model')
+                    ->label('Model'),
+
+                Forms\Components\TextInput::make('model_id')
+                    ->label('Model ID'),
+
+                Forms\Components\TextInput::make('action')
+                    ->label('Action'),
+
+                Forms\Components\TextInput::make('status')
+                    ->label('Status'),
+
+                Forms\Components\DatePicker::make('completed_at')
+                    ->label('Completed At'),
+
+                Forms\Components\DatePicker::make('failed_at')
+                    ->label('Failed At'),
+
+                Forms\Components\Textarea::make('failed_reason')
+                    ->label('Failed Reason'),
+
+                Forms\Components\Textarea::make('data')
+                    ->label('Data'),
             ]);
     }
 
@@ -32,13 +58,40 @@ class SyncResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('model')
+                    ->label('Model'),
+
+                TextColumn::make('model_id')
+                    ->label('Model ID'),
+
+                TextColumn::make('action')
+                    ->badge()
+                    ->color(fn ($record) => match ($record->action) {
+                        'push' => 'success',
+                        'pull' => 'info',
+                        default => 'neutral',
+                    })
+                    ->label('Action'),
+                
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn ($record) => match ($record->status) {
+                        'completed' => 'success',
+                        'failed' => 'danger',
+                        default => 'neutral',
+                    })
+                    ->label('Status'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                //
+                ViewAction::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+            ])
+            ->bulkActions([
+                DeleteBulkAction::make(),
             ]);
     }
 

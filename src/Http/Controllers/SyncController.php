@@ -9,13 +9,39 @@ use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Routing\Controller;
+use Teguh02\FilamentDbSync\Models\DbSync;
 
 class SyncController extends Controller
 {
     public function sync()
     {
         $excludeTables = config('db_sync.exclude_tables');
-        $tables = DB::connection()->getDoctrineSchemaManager()->listTableNames();
+        $all_tables = [];
+
+        switch (config('database.connections.' . config('database.default') . '.driver')) {
+            case 'mysql':
+            case 'mariadb':
+                default:
+                $all_tables = DB::select('SHOW TABLES');
+                break;
+                
+            case 'pgsql':
+                $all_tables = DB::select("SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'");
+                break;
+
+            case 'sqlite':
+                $all_tables = DB::select("SELECT name FROM sqlite_master WHERE type='table'");
+                break;
+
+            case 'sqlsrv':
+                $all_tables = DB::select("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'");
+                break;
+        }
+
+        $tables = collect($all_tables)->map(function ($table) {
+            return reset($table);
+        }) -> toArray();
+
         $tablesToSync = array_diff($tables, $excludeTables);
 
         foreach ($tablesToSync as $table) {
@@ -23,7 +49,7 @@ class SyncController extends Controller
         }
 
         Notification::make()
-            ->title('Sinkronisasi dimulai')
+            ->title('Sync started')
             ->success()
             ->send();
 
@@ -46,21 +72,47 @@ class SyncController extends Controller
 
         DB::beginTransaction();
         try {
+            // If table does not exist, create it
             if (!Schema::hasTable($table)) {
                 Schema::create($table, function ($tableSchema) use ($header) {
                     foreach ($header as $column) {
                         $tableSchema->string($column)->nullable();
                     }
                 });
-            }
+            } 
 
+            // Get all columns in the table
+            $columns = Schema::getColumnListing($table);
+
+            // Insert data according to the columns in the table
             foreach ($data as $row) {
-                DB::table($table)->insert(array_combine($header, $row));
+                $rowData = [];
+                foreach ($columns as $column) {
+                    $rowData[$column] = $row[array_search($column, $header)] ?? 0;
+                }
+
+                // Remove empty values
+                $rowData = array_filter($rowData, function ($value) {
+                    return !in_array($value, ['NULL', 'null', '', 0, null]);
+                });
+
+                DB::table($table)->insert($rowData);
             }
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+
+            DbSync::create([
+                'model' => 'table',
+                'model_id' => $table,
+                'action' => 'pull',
+                'data' => $csvData,
+                'status' => 'failed',
+                'failed_at' => now(),
+                'failed_reason' => $e->getMessage() . ' ' . $e->getTraceAsString(),
+            ]);
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
 

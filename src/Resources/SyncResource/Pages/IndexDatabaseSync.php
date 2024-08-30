@@ -2,16 +2,25 @@
 
 namespace Teguh02\FilamentDbSync\Resources\SyncResource\Pages;
 
-use Filament\Resources\Pages\Page;
+use Filament\Resources\Pages\ListRecords;
 use Filament\Notifications\Notification;
 use Teguh02\FilamentDbSync\Http\Controllers\SyncController;
 use Teguh02\FilamentDbSync\Resources\SyncResource;
+use Filament\Actions\Action;
 
-class IndexDatabaseSync extends Page
+class IndexDatabaseSync extends ListRecords
 {
     protected static string $resource = SyncResource::class;
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
-    protected static string $view = 'filament.pages.database-sync-page';
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('syncDatabase')
+                    ->label('Sync Database')
+                    ->icon('heroicon-o-arrow-path')
+                    ->action('syncDatabase')
+        ];
+    }
 
     public function syncDatabase()
     {
@@ -19,12 +28,12 @@ class IndexDatabaseSync extends Page
             app(SyncController::class)->sync();
 
             Notification::make()
-                ->title('Sinkronisasi berhasil dimulai')
+                ->title('Database synchronized')
                 ->success()
                 ->send();
         } catch (\Exception $e) {
             Notification::make()
-                ->title('Sinkronisasi gagal')
+                ->title('Database sync failed')
                 ->danger()
                 ->body($e->getMessage())
                 ->send();
