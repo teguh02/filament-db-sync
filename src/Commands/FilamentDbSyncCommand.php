@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Teguh02\FilamentDbSync\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class FilamentDbSyncCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'filament-db-sync';
 
     public $description = 'My command';
 
