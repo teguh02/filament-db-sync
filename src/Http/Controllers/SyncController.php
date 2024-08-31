@@ -3,23 +3,18 @@
 namespace Teguh02\FilamentDbSync\Http\Controllers;
 
 use Filament\Notifications\Notification;
-use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Queue;
-use Teguh02\FilamentDbSync\Jobs\SyncTableJob;
+use Teguh02\FilamentDbSync\Jobs\SyncTableToServerJob;
+use Teguh02\FilamentDbSync\Services\ModelsServices;
 
 class SyncController extends Controller
 {
     public function sync()
-    {
-
-        $tablesToSync = array_diff($tables, $excludeTables);
-
-        foreach ($tablesToSync as $table) {
-            Queue::push(new SyncTableJob($table));
+    {   
+        foreach (ModelsServices::getModelsWantToBeSynced() as $models) {
+            Queue::push(new SyncTableToServerJob($models));
         }
 
         Notification::make()
