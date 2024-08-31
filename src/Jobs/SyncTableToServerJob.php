@@ -5,14 +5,14 @@ namespace Teguh02\FilamentDbSync\Jobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Teguh02\FilamentDbSync\Models\DbSync;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Teguh02\FilamentDbSync\Services\ModelsServices;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use Teguh02\FilamentDbSync\FilamentDbSync;
+use Teguh02\FilamentDbSync\Models\DbSync;
+use Teguh02\FilamentDbSync\Services\ModelsServices;
 
 class SyncTableToServerJob implements ShouldQueue
 {
@@ -31,10 +31,13 @@ class SyncTableToServerJob implements ShouldQueue
     protected $plugin_ids;
 
     protected $models;
+
     protected $model_definition;
+
     protected $models_datas;
 
     protected $sync_host;
+
     protected $sync_token;
 
     // Used for receiving data from the sync host and saving it to the database
@@ -42,7 +45,7 @@ class SyncTableToServerJob implements ShouldQueue
 
     public function __construct($models)
     {
-        $this->plugin_ids = (new FilamentDbSync) -> getId();
+        $this->plugin_ids = (new FilamentDbSync)->getId();
 
         $this->models = $models::class;
         $this->model_definition = ModelsServices::modelsTableSchemaDefinition($this->models);

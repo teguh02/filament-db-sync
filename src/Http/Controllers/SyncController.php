@@ -12,7 +12,7 @@ use Teguh02\FilamentDbSync\Services\ModelsServices;
 class SyncController extends Controller
 {
     public function sync()
-    {   
+    {
         foreach (ModelsServices::getModelsWantToBeSynced() as $models) {
             Queue::push(new SyncTableToServerJob($models));
         }
