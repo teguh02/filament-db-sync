@@ -207,8 +207,8 @@ class ModelsServices
                 case 'update':
                     foreach ($model_datas as $model_data) {
                         $data = DB::table($model_definition['table_name'])
-                                    ->where('id', $model_data['id'])
-                                    ->first();
+                            ->where('id', $model_data['id'])
+                            ->first();
 
                         if ($data) {
                             $data = [];
