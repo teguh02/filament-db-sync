@@ -4,6 +4,10 @@ namespace Teguh02\FilamentDbSync\Services;
 
 use Closure;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
+use Teguh02\FilamentDbSync\Models\DbSync;
 
 class ModelsServices 
 {
@@ -133,4 +137,135 @@ class ModelsServices
                     ->get()
                     ->toArray();
     }
+
+    /**
+     * Create the table schema
+     *
+     * @param array $model_definition
+     * @param String $plugin_ids
+     * @return boolean
+     */
+    static function createTableSchema(array $model_definition, String $plugin_ids): bool
+    {
+        // Definition : {"class":"App\\Models\\Items","table_name":"items","schema":[{"name":"name","type":"string"},{"name":"description","type":"string"},{"name":"price","type":"integer"},{"name":"stock","type":"integer"},{"name":"expired_at","type":"date"}]}  
+
+        // Check if the table exists
+        if (!Schema::hasTable($model_definition['table_name'])) {
+            try {
+                Schema::create($model_definition['table_name'], function ($table) use ($model_definition) {
+                    // Create the primary key
+                    $table->id();
+
+                    // Create the table schema
+                    foreach ($model_definition['schema'] as $column) {
+                        // Handle hashed type
+                        if ($column['type'] == 'hashed') {
+                            $table->string($column['name']) -> nullable();
+                        
+                        // Handle the other types
+                        } else {
+                            $table->{$column['type']}($column['name']) -> nullable();
+                        }
+                    }
+
+                    // Create the timestamps
+                    $table->timestamps();
+                    $table->softDeletes();
+                });
+            } catch (\Throwable $th) {
+                Log::error('[' . $plugin_ids . '] Error creating table: ' . $model_definition['table_name']);
+                Log::error('[' . $plugin_ids . '] Error message: ' . $th->getMessage());
+                return false;
+            }
+
+            Log::info('[' . $plugin_ids . '] Table created: ' . $model_definition['table_name']);
+        }
+
+        Log::info('[' . $plugin_ids . '] Table already exists: ' . $model_definition['table_name']);
+        return true;
+    }
+
+    /**
+     * Store the data to the database
+     *
+     * @param array $model_definition
+     * @param array $model_datas
+     * @param string $plugin_ids
+     * @param array $sync_config
+     * @return void
+     */
+    static function storeDataToDatabase(array $model_definition, array $model_datas, string $plugin_ids, array $sync_config) : void
+    {
+        // Definition : {"class":"App\\Models\\Items","table_name":"items","schema":[{"name":"name","type":"string"},{"name":"description","type":"string"},{"name":"price","type":"integer"},{"name":"stock","type":"integer"},{"name":"expired_at","type":"date"}]}  
+        // Datas : [{"id":9,"name":"Dr. Barney Simonis DVM","email":"krippin@hotmail.com","email_verified_at":null,"created_at":"2024-08-30T17:49:09.000000Z","updated_at":"2024-08-30T17:49:09.000000Z"},{"id":10,"name":"Lizzie Aufderhar","email":"hirthe.stanley@hill.info","email_verified_at":null,"created_at":"2024-08-30T17:49:09.000000Z","updated_at":"2024-08-30T17:49:09.000000Z"},{"id":11,"name":"Anastasia Davis","email":"bradley.doyle@schiller.net","email_verified_at":null,"created_at":"2024-08-30T17:49:09.000000Z","updated_at":"2024-08-30T17:49:09.000000Z"},{"id":6,"name":"Hyman Graham","email":"weldon02@yahoo.com","email_verified_at":null,"created_at":"2024-08-30T17:49:08.000000Z","updated_at":"2024-08-30T17:49:08.000000Z"},{"id":7,"name":"Thurman Douglas","email":"hallie.cremin@mayer.biz","email_verified_at":null,"created_at":"2024-08-30T17:49:08.000000Z","updated_at":"2024-08-30T17:49:08.000000Z"},{"id":8,"name":"Mrs. Margaret Lang","email":"watsica.cassandre@ortiz.com","email_verified_at":null,"created_at":"2024-08-30T17:49:08.000000Z","updated_at":"2024-08-30T17:49:08.000000Z"},{"id":2,"name":"Novella Hudson","email":"uhackett@emard.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":3,"name":"Karley Schmitt","email":"buster59@gmail.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":4,"name":"Christop Johnston II","email":"johann02@mante.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":5,"name":"Delores O'Hara","email":"vbernier@gmail.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":1,"name":"Admin","email":"admin@gmail.com","email_verified_at":null,"created_at":"2024-08-30T14:11:52.000000Z","updated_at":"2024-08-30T14:11:52.000000Z"}]  
+
+        // Get the duplicate data action
+        $duplicate_data_action = $sync_config['duplicate_data_action'];
+
+        // Get tabel schema
+        $schema = $model_definition['schema'];
+
+       try {
+            switch ($duplicate_data_action) {
+                
+                // Handle the update data action
+                default:
+                case 'update':
+                    foreach ($model_datas as $model_data) {
+                        $data = [];
+
+                        // Create the database instance
+                        $db = DB::table($model_definition['table_name']);
+
+                        // manual increment id
+                        $data['id'] = $db->orderBy('id', 'desc')->first()?->id + 1 ?? 1;
+
+                        foreach ($schema as $column) {
+                            $data[$column['name']] = $model_data[$column['name']] ?? null;
+                        }
+
+                        Log::info('[' . $plugin_ids . '] Data to be updated: ' . json_encode($data));
+
+                        $db->updateOrInsert(['id' => $model_data['id']], $data);
+                    }
+                    break;
+                
+                // Handle the duplicate data action
+                case 'duplicate':
+                    foreach ($model_datas as $model_data) {
+                        $data = [];
+
+                        // Create the database instance
+                        $db = DB::table($model_definition['table_name']);
+
+                        // manual increment id
+                        $data['id'] = $db->orderBy('id', 'desc')->first()?->id + 1 ?? 1;
+
+                        foreach ($schema as $column) {
+                            $data[$column['name']] = $model_data[$column['name']];
+                        }
+
+                        Log::info('[' . $plugin_ids . '] Data to be inserted: ' . json_encode($data));
+
+                        $db->insert($data);
+                    }
+                    break;
+            }
+       } catch (\Throwable $th) {
+            // Store the failed job to the database
+            DbSync::create([
+                'model' => $model_definition['class'],
+                'model_id' => null,
+                'action' => 'pull',
+                'data' => json_encode($model_datas),
+                'status' => 'failed',
+                'failed_at' => now(),
+                'failed_reason' => $th->getMessage() . ' ' . $th->getTraceAsString(),
+            ]);
+
+            // Log the error
+            Log::error('[' . $plugin_ids . '] ' . $th->getMessage() . ' ' . $th->getTraceAsString());
+       }
+    }
+
 }
