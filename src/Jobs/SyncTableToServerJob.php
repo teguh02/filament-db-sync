@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Route;
 use Teguh02\FilamentDbSync\FilamentDbSync;
 use Teguh02\FilamentDbSync\Models\DbSync;
 use Teguh02\FilamentDbSync\Services\ModelsServices;
-
 class SyncTableToServerJob implements ShouldQueue
 {
     use Dispatchable;

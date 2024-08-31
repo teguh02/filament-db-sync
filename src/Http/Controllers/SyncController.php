@@ -11,6 +11,8 @@ use Teguh02\FilamentDbSync\Services\ModelsServices;
 use Illuminate\Support\Facades\Log;
 use Teguh02\FilamentDbSync\FilamentDbSync;
 use Illuminate\Support\Facades\Config;
+use Teguh02\FilamentDbSync\Jobs\SyncTableFromServerJob;
+
 class SyncController extends Controller
 {
     protected $plugin_ids;
@@ -27,6 +29,24 @@ class SyncController extends Controller
         foreach (ModelsServices::getModelsWantToBeSynced() as $models) {
             Queue::push(new SyncTableToServerJob($models));
         }
+
+        Log::info('[' . $this->plugin_ids . '] Models to be synced: ' . json_encode(ModelsServices::getModelsWantToBeSynced()));
+
+        Notification::make()
+            ->title('Sync started')
+            ->success()
+            ->send();
+
+        return response()->json(['status' => 'Sync started']);
+    }
+
+    public function pull()
+    {
+        foreach (ModelsServices::getModelsWantToBeSynced() as $models) {
+            Queue::push(new SyncTableFromServerJob($models));
+        }
+
+        Log::info('[' . $this->plugin_ids . '] Models to be synced: ' . json_encode(ModelsServices::getModelsWantToBeSynced()));
 
         Notification::make()
             ->title('Sync started')
@@ -69,5 +89,10 @@ class SyncController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        return response() -> json([
+            'data' => ModelsServices::getTableDatas($request->input('table_name')),
+            'table_name' => $request->input('table_name'),
+            'status' => 'Data retrieved'
+        ]);
     }
 }

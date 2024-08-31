@@ -139,6 +139,19 @@ class ModelsServices
     }
 
     /**
+     * Get the table datas
+     *
+     * @param String $table_name
+     * @return array
+     */
+    static function getTableDatas(String $table_name): array
+    {
+        return DB::table($table_name)
+                    ->get()
+                    ->toArray();
+    }
+
+    /**
      * Create the table schema
      *
      * @param array $model_definition

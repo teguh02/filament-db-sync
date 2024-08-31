@@ -20,10 +20,9 @@ class SyncResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
 
-    public function getTitle(): string
-    {
-        return 'Sync Database';
-    }
+    protected static ?string $navigationLabel = 'Database Sync';    
+
+    protected static ?string $modelLabel = 'Database Sync';
 
     public static function form(Form $form): Form
     {
@@ -31,9 +30,6 @@ class SyncResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('model')
                     ->label('Model'),
-
-                Forms\Components\TextInput::make('model_id')
-                    ->label('Model ID'),
 
                 Forms\Components\TextInput::make('action')
                     ->label('Action'),
@@ -62,9 +58,6 @@ class SyncResource extends Resource
                 TextColumn::make('model')
                     ->label('Model'),
 
-                TextColumn::make('model_id')
-                    ->label('Model ID'),
-
                 TextColumn::make('action')
                     ->badge()
                     ->color(fn ($record) => match ($record->action) {
@@ -82,6 +75,9 @@ class SyncResource extends Resource
                         default => 'neutral',
                     })
                     ->label('Status'),
+
+                TextColumn::make('created_at')
+                    ->label('Timestamp'),
             ])
             ->filters([
                 //
