@@ -225,21 +225,39 @@ class ModelsServices
                 default:
                 case 'update':
                     foreach ($model_datas as $model_data) {
-                        $data = [];
+                        $data = DB::table($model_definition['table_name'])
+                                    ->where('id', $model_data['id'])
+                                    ->first();
 
-                        // Create the database instance
-                        $db = DB::table($model_definition['table_name']);
+                        if ($data) {
+                            $data = [];
 
-                        // manual increment id
-                        $data['id'] = $db->orderBy('id', 'desc')->first()?->id + 1 ?? 1;
+                            foreach ($schema as $column) {
+                                $data[$column['name']] = $model_data[$column['name']] ?? null;
+                            }
 
-                        foreach ($schema as $column) {
-                            $data[$column['name']] = $model_data[$column['name']] ?? null;
+                            Log::info('[' . $plugin_ids . '] Data to be updated: ' . json_encode($data));
+
+                            DB::table($model_definition['table_name'])
+                                ->where('id', $model_data['id'])
+                                ->update($data);
+                        } else {
+                            $data = [];
+
+                            // Create the database instance
+                            $db = DB::table($model_definition['table_name']);
+
+                            // manual increment id
+                            $data['id'] = $db->orderBy('id', 'desc')->first()?->id + 1 ?? 1;
+
+                            foreach ($schema as $column) {
+                                $data[$column['name']] = $model_data[$column['name']] ?? null;
+                            }
+
+                            Log::info('[' . $plugin_ids . '] Data to be inserted: ' . json_encode($data));
+
+                            $db->insert($data);
                         }
-
-                        Log::info('[' . $plugin_ids . '] Data to be updated: ' . json_encode($data));
-
-                        $db->updateOrInsert(['id' => $model_data['id']], $data);
                     }
                     break;
                 
@@ -255,11 +273,13 @@ class ModelsServices
                         $data['id'] = $db->orderBy('id', 'desc')->first()?->id + 1 ?? 1;
 
                         foreach ($schema as $column) {
-                            $data[$column['name']] = $model_data[$column['name']];
+                            $data[$column['name']] = $model_data[$column['name']] ?? null;
                         }
 
+                        // Insert the data
                         Log::info('[' . $plugin_ids . '] Data to be inserted: ' . json_encode($data));
 
+                        // Insert the data
                         $db->insert($data);
                     }
                     break;
