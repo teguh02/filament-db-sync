@@ -44,4 +44,14 @@ class SyncController extends Controller
 
         
     }
+
+    public function getData(Request $request)
+    {
+        $authToken = $request->header('Authorization');
+        if ($authToken !== 'Bearer ' . config('db_sync.auth_token')) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        
+    }
 }

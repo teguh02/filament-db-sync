@@ -17,43 +17,74 @@ You can install the package via composer:
 composer require teguh02/filament-db-sync
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="filament-db-sync-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="filament-db-sync-config"
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="filament-db-sync-views"
-```
-
-This is the contents of the published config file:
-
+### Panel Configuration
+Install the library in your panel service provider
 ```php
-return [
-];
+<?php
+use Teguh02\FilamentDbSync\FilamentDbSync;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+    // ... another filament configuration
+        ->plugins([
+            FilamentDbSync::make(),
+        ]);
+}
+```
+### Configuration File and Migrations
+
+Publish the configuration and migrations
+
+```bash
+php artisan vendor:publish --provider="Teguh02\FilamentDbSync\FilamentDbSyncServiceProvider"
+php artisan migrate
 ```
 
 ## Usage
 
+### Model configuration
+In your model class, add the <code>fillable</code> and the <code>casts</code> attribute. For example if we have a model with name is Items, the model configuration should will be below
 ```php
-$filamentDbSync = new Teguh02\FilamentDbSync();
-echo $filamentDbSync->echoPhrase('Hello, Teguh02!');
-```
+<?php
 
-## Testing
+namespace App\Models;
 
-```bash
-composer test
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Items extends Model
+{
+    use HasFactory;
+
+    // Define the table property 
+    // if the table name is different
+    // protected $table = 'items';
+
+    // Define the primary key property
+    // if the primary key is different
+    // protected $primaryKey = 'id';
+
+    // Define the fillable property to 
+    // allow mass assignment on the model
+    // and the database sync process
+    protected $fillable = [
+        'name',
+        'description',
+        'price',
+        'stock',
+        'expired_at',
+    ];
+
+    // Define the casts property to
+    // automatically cast the data type
+    // of the model attributes
+    protected $casts = [
+        'stock' => 'integer',
+        'price' => 'integer',
+        'expired_at' => 'date',
+    ];
+}
 ```
 
 ## Changelog
