@@ -53,6 +53,6 @@ return [
          * - ignore : ignore the new data
          * - duplicate : create a new data with the same data
          */
-        'duplicate_data_action' => 'update', 
+        'duplicate_data_action' => env('DUPLICATE_DATA_ACTION', 'update'),
     ]
 ];
