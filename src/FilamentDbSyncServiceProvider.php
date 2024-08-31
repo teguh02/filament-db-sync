@@ -33,17 +33,6 @@ class FilamentDbSyncServiceProvider extends ServiceProvider
         // register the db_sync api routes
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
-        // find is SYNC_ROUTE env variable exists
-        if (empty(env('SYNC_ROUTE'))) {
-            // append SYNC_ROUTE env variable to .env file
-            // and get from route('api.filament-db-sync')
-            file_put_contents(
-                base_path('.env'),
-                PHP_EOL.'SYNC_ROUTE=/api/filament-db-sync',
-                FILE_APPEND
-            );
-        }
-
         if (empty(env('SYNC_TOKEN'))) {
             // append SYNC_TOKEN env variable to .env file
             // and random string for the auth token

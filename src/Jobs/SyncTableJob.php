@@ -27,23 +27,28 @@ class SyncTableJob implements ShouldQueue
 
     public function handle()
     {
-        $data = DB::table($this->table)->get()->toArray();
-        $header = array_keys((array) $data[0]);
+        // Get all data from the table
+        $data = DB::table($this->table)
+                        // ->whereNull('deleted_at') // Uncomment this line if you want to sync only non-deleted data
+                        ->get()
+                        ->toArray();
 
-        $csvData = implode(',', $header) . "\n";
+        // Get table schema
+        // and the data type
+        $schema = DB::select("SHOW COLUMNS FROM $this->table");
+
+        dd($schema);
 
         try {
-            foreach ($data as $row) {
-                $csvData .= implode(',', array_map([$this, 'escapeCSVValue'], (array) $row)) . "\n";
-            }
-
+            // Send data to the sync host
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . config('db_sync.auth_token'),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ])->post(config('db_sync.sync_host') . config('db_sync.sync_route'), [
                 'table' => $this->table,
-                'data' => base64_encode($csvData),
+                'data' => json_encode($data),
+                'primaryKey' => config('db_sync.manual_primary_key.' . $this->table, config('db_sync.default_primary_key')),
             ]);
 
             if ($response->failed()) {
@@ -53,7 +58,7 @@ class SyncTableJob implements ShouldQueue
                     'model' => 'table',
                     'model_id' => $this->table,
                     'action' => 'push',
-                    'data' => $csvData,
+                    'data' => json_encode($data),
                     'status' => 'completed',
                     'completed_at' => now(),
                 ]);
@@ -63,7 +68,7 @@ class SyncTableJob implements ShouldQueue
                 'model' => 'table',
                 'model_id' => $this->table,
                 'action' => 'push',
-                'data' => $csvData,
+                'data' => json_encode($data),
                 'status' => 'failed',
                 'failed_at' => now(),
                 'failed_reason' => $th->getMessage() . ' ' . $th->getTraceAsString(),
@@ -73,18 +78,13 @@ class SyncTableJob implements ShouldQueue
         }
     }
 
-    protected function escapeCSVValue($value)
-    {
-        return str_replace(["'", "\n", "\r"], ["''", "\\n", "\\r"], $value);
-    }
-
     public function failed($exception)
     {
         DbSync::create([
             'model' => 'table',
             'model_id' => $this->table,
             'action' => 'push',
-            'data' => '',
+            'data' => json_encode([]),
             'status' => 'failed',
             'failed_at' => now(),
             'failed_reason' => $exception->getMessage() . ' ' . $exception->getTraceAsString(),
