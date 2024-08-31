@@ -87,9 +87,16 @@ class Items extends Model
 }
 ```
 
-## Changelog
+### Queue configuration
+Because this plugin use a jobs function to execute huge data, please set your queue driver according your needs
+```bash
+#QUEUE_CONNECTION=sync
+QUEUE_CONNECTION=database
+```
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+## Screenshoot
+![Screenshot](https://github.com/user-attachments/assets/7c0add30-0f0f-4b1c-baa8-cccf59f61444)
+
 
 ## Contributing
 
