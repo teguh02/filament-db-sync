@@ -105,7 +105,7 @@ class SyncResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => IndexDatabaseSync::route('/')
+            'index' => IndexDatabaseSync::route('/'),
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace Teguh02\FilamentDbSync\Resources\SyncResource\Pages;
 
 use Filament\Resources\Pages\ListRecords;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\Page;
 use Teguh02\FilamentDbSync\Http\Controllers\SyncController;
 use Teguh02\FilamentDbSync\Resources\SyncResource;
 use Filament\Actions\Action;
