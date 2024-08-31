@@ -28,7 +28,8 @@ class IndexDatabaseSync extends ListRecords
         ];
     }
 
-    function pullToServer() {
+    public function pullToServer()
+    {
         try {
             app(SyncController::class)->pull();
 
