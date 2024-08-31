@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Teguh02\FilamentDbSync\Models\DbSync;
+
 class SyncTableJob implements ShouldQueue
 {
     use Dispatchable;
@@ -32,8 +33,8 @@ class SyncTableJob implements ShouldQueue
         // Get all data from the table
         $data = DB::table($this->table)
                         // ->whereNull('deleted_at') // Uncomment this line if you want to sync only non-deleted data
-                        ->get()
-                        ->toArray();
+            ->get()
+            ->toArray();
 
         // Get table schema
         // and the data type

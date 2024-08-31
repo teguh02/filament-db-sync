@@ -18,7 +18,7 @@ return [
      */
     'models' => [
         /**
-         * If set to true, the package will 
+         * If set to true, the package will
          * automatically scan all models in the app/Models directory
          */
         'auto_scan' => env('AUTO_SCAN_MODELS', true),
@@ -47,12 +47,12 @@ return [
     'sync' => [
         /**
          * The action to be taken when there is duplicate data
-         * 
+         *
          * Available options:
          * - update : update the existing data
          * - ignore : ignore the new data
          * - duplicate : create a new data with the same data
          */
         'duplicate_data_action' => env('DUPLICATE_DATA_ACTION', 'update'),
-    ]
+    ],
 ];

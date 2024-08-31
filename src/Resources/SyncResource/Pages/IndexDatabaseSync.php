@@ -2,12 +2,11 @@
 
 namespace Teguh02\FilamentDbSync\Resources\SyncResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\Page;
+use Filament\Resources\Pages\ListRecords;
 use Teguh02\FilamentDbSync\Http\Controllers\SyncController;
 use Teguh02\FilamentDbSync\Resources\SyncResource;
-use Filament\Actions\Action;
 
 class IndexDatabaseSync extends ListRecords
 {
@@ -17,9 +16,9 @@ class IndexDatabaseSync extends ListRecords
     {
         return [
             Action::make('syncDatabase')
-                    ->label('Sync Database')
-                    ->icon('heroicon-o-arrow-path')
-                    ->action('syncDatabase')
+                ->label('Sync Database')
+                ->icon('heroicon-o-arrow-path')
+                ->action('syncDatabase'),
         ];
     }
 
