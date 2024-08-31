@@ -5,22 +5,23 @@ namespace Teguh02\FilamentDbSync\Http\Controllers;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
+use Teguh02\FilamentDbSync\FilamentDbSync;
+use Teguh02\FilamentDbSync\Jobs\SyncTableFromServerJob;
 use Teguh02\FilamentDbSync\Jobs\SyncTableToServerJob;
 use Teguh02\FilamentDbSync\Services\ModelsServices;
-use Illuminate\Support\Facades\Log;
-use Teguh02\FilamentDbSync\FilamentDbSync;
-use Illuminate\Support\Facades\Config;
-use Teguh02\FilamentDbSync\Jobs\SyncTableFromServerJob;
 
 class SyncController extends Controller
 {
     protected $plugin_ids;
+
     protected $sync_config;
 
-    function __construct()
+    public function __construct()
     {
-        $this->plugin_ids = (new FilamentDbSync) -> getId();   
+        $this->plugin_ids = (new FilamentDbSync)->getId();
         $this->sync_config = Config::get('db_sync.sync');
     }
 
@@ -76,7 +77,7 @@ class SyncController extends Controller
         ModelsServices::createTableSchema($model_definition, $this->plugin_ids);
 
         // Save the data to the database
-        ModelsServices::storeDataToDatabase( $model_definition, $models_datas, $this->plugin_ids, $this->sync_config);
+        ModelsServices::storeDataToDatabase($model_definition, $models_datas, $this->plugin_ids, $this->sync_config);
 
         // Return the response
         return response()->json(['status' => 'Data received']);
@@ -89,10 +90,10 @@ class SyncController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return response() -> json([
+        return response()->json([
             'data' => ModelsServices::getTableDatas($request->input('table_name')),
             'table_name' => $request->input('table_name'),
-            'status' => 'Data retrieved'
+            'status' => 'Data retrieved',
         ]);
     }
 }

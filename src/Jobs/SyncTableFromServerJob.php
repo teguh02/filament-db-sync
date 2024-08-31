@@ -37,7 +37,9 @@ class SyncTableFromServerJob implements ShouldQueue
     protected $models_datas;
 
     protected $sync_host;
+
     protected $sync_config;
+
     protected $sync_token;
 
     // Used for getting data from the sync host according to the table name
@@ -70,7 +72,7 @@ class SyncTableFromServerJob implements ShouldQueue
             'Content-Type' => 'application/json',
         ])->post($this->sync_host . $this->api_get_data, [
             'table_name' => $table_name,
-        ]) -> json();
+        ])->json();
 
         if (isset($response['status']) && $response['status'] == 'Data retrieved') {
             if (isset($response['data'])) {

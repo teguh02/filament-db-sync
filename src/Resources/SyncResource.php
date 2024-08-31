@@ -21,7 +21,7 @@ class SyncResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
 
-    protected static ?string $navigationLabel = 'Database Sync';    
+    protected static ?string $navigationLabel = 'Database Sync';
 
     protected static ?string $modelLabel = 'Database Sync';
 
