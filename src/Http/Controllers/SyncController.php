@@ -79,10 +79,10 @@ class SyncController extends Controller
 
         // Save the data to the database
         ModelsServices::storeDataToDatabase(
-            $primary_key, 
-            $model_definition, 
-            $models_datas, 
-            $this->plugin_ids, 
+            $primary_key,
+            $model_definition,
+            $models_datas,
+            $this->plugin_ids,
             $this->sync_config
         );
 
@@ -98,7 +98,7 @@ class SyncController extends Controller
         }
 
         // check if table_name is empty
-        if (!$request->has('table_name')) {
+        if (! $request->has('table_name')) {
             return response()->json(['error' => 'Table name is required'], 400);
         }
 
