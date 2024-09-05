@@ -67,6 +67,7 @@ class SyncController extends Controller
         $model = $request->input('model');
         $model_definition = $request->input('model_definition');
         $models_datas = $request->input('models_datas');
+        $primary_key = $request->input('primary_key');
 
         // Store the data to the logs
         Log::info('[' . $this->plugin_ids . '] Models received: ' . $model);
@@ -77,7 +78,13 @@ class SyncController extends Controller
         ModelsServices::createTableSchema($model_definition, $this->plugin_ids);
 
         // Save the data to the database
-        ModelsServices::storeDataToDatabase($model_definition, $models_datas, $this->plugin_ids, $this->sync_config);
+        ModelsServices::storeDataToDatabase(
+            $primary_key, 
+            $model_definition, 
+            $models_datas, 
+            $this->plugin_ids, 
+            $this->sync_config
+        );
 
         // Return the response
         return response()->json(['status' => 'Data received']);
@@ -90,9 +97,16 @@ class SyncController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        // check if table_name is empty
+        if (!$request->has('table_name')) {
+            return response()->json(['error' => 'Table name is required'], 400);
+        }
+
+        // return the data to the client
         return response()->json([
             'data' => ModelsServices::getTableDatas($request->input('table_name')),
             'table_name' => $request->input('table_name'),
+            'primary_key' => ModelsServices::getTablePrimaryKeyFromConfig($request->input('table_name')),
             'status' => 'Data retrieved',
         ]);
     }

@@ -141,6 +141,28 @@ class ModelsServices
     }
 
     /**
+     * Get the table primary key from the config
+     *
+     * @param string $table_name
+     * @return string
+     */
+    public static function getTablePrimaryKeyFromConfig(string $table_name): string
+    {
+        $primary_key = 'id';
+        $tables_keys = [];
+
+        foreach (self::modelsConfig('column_as_key') as $key => $value) {
+            if (class_exists($key)) {
+                $tables_keys[(new $key)->getTable()] = $value;
+            } else {
+                $tables_keys[$key] = $value;  
+            }
+        }
+
+        return isset($tables_keys[$table_name]) ? $tables_keys[$table_name] : $primary_key;
+    }
+
+    /**
      * Create the table schema
      */
     public static function createTableSchema(array $model_definition, string $plugin_ids): bool
@@ -188,7 +210,7 @@ class ModelsServices
     /**
      * Store the data to the database
      */
-    public static function storeDataToDatabase(array $model_definition, array $model_datas, string $plugin_ids, array $sync_config): void
+    public static function storeDataToDatabase(string $model_primary_key, array $model_definition, array $model_datas, string $plugin_ids, array $sync_config): void
     {
         // Definition : {"class":"App\\Models\\Items","table_name":"items","schema":[{"name":"name","type":"string"},{"name":"description","type":"string"},{"name":"price","type":"integer"},{"name":"stock","type":"integer"},{"name":"expired_at","type":"date"}]}
         // Datas : [{"id":9,"name":"Dr. Barney Simonis DVM","email":"krippin@hotmail.com","email_verified_at":null,"created_at":"2024-08-30T17:49:09.000000Z","updated_at":"2024-08-30T17:49:09.000000Z"},{"id":10,"name":"Lizzie Aufderhar","email":"hirthe.stanley@hill.info","email_verified_at":null,"created_at":"2024-08-30T17:49:09.000000Z","updated_at":"2024-08-30T17:49:09.000000Z"},{"id":11,"name":"Anastasia Davis","email":"bradley.doyle@schiller.net","email_verified_at":null,"created_at":"2024-08-30T17:49:09.000000Z","updated_at":"2024-08-30T17:49:09.000000Z"},{"id":6,"name":"Hyman Graham","email":"weldon02@yahoo.com","email_verified_at":null,"created_at":"2024-08-30T17:49:08.000000Z","updated_at":"2024-08-30T17:49:08.000000Z"},{"id":7,"name":"Thurman Douglas","email":"hallie.cremin@mayer.biz","email_verified_at":null,"created_at":"2024-08-30T17:49:08.000000Z","updated_at":"2024-08-30T17:49:08.000000Z"},{"id":8,"name":"Mrs. Margaret Lang","email":"watsica.cassandre@ortiz.com","email_verified_at":null,"created_at":"2024-08-30T17:49:08.000000Z","updated_at":"2024-08-30T17:49:08.000000Z"},{"id":2,"name":"Novella Hudson","email":"uhackett@emard.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":3,"name":"Karley Schmitt","email":"buster59@gmail.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":4,"name":"Christop Johnston II","email":"johann02@mante.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":5,"name":"Delores O'Hara","email":"vbernier@gmail.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":1,"name":"Admin","email":"admin@gmail.com","email_verified_at":null,"created_at":"2024-08-30T14:11:52.000000Z","updated_at":"2024-08-30T14:11:52.000000Z"}]
@@ -207,7 +229,7 @@ class ModelsServices
                 case 'update':
                     foreach ($model_datas as $model_data) {
                         $data = DB::table($model_definition['table_name'])
-                            ->where('id', $model_data['id'])
+                            ->where($model_primary_key, $model_data[$model_primary_key])
                             ->first();
 
                         if ($data) {
@@ -220,7 +242,7 @@ class ModelsServices
                             Log::info('[' . $plugin_ids . '] Data to be updated: ' . json_encode($data));
 
                             DB::table($model_definition['table_name'])
-                                ->where('id', $model_data['id'])
+                                ->where($model_primary_key, $model_data[$model_primary_key])
                                 ->update($data);
                         } else {
                             $data = [];

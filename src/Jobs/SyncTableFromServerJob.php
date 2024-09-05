@@ -62,6 +62,9 @@ class SyncTableFromServerJob implements ShouldQueue
 
     public function handle()
     {
+        // Definition : {"class":"App\\Models\\Items","table_name":"items","schema":[{"name":"name","type":"string"},{"name":"description","type":"string"},{"name":"price","type":"integer"},{"name":"stock","type":"integer"},{"name":"expired_at","type":"date"}]}
+        // Datas : [{"id":9,"name":"Dr. Barney Simonis DVM","email":"krippin@hotmail.com","email_verified_at":null,"created_at":"2024-08-30T17:49:09.000000Z","updated_at":"2024-08-30T17:49:09.000000Z"},{"id":10,"name":"Lizzie Aufderhar","email":"hirthe.stanley@hill.info","email_verified_at":null,"created_at":"2024-08-30T17:49:09.000000Z","updated_at":"2024-08-30T17:49:09.000000Z"},{"id":11,"name":"Anastasia Davis","email":"bradley.doyle@schiller.net","email_verified_at":null,"created_at":"2024-08-30T17:49:09.000000Z","updated_at":"2024-08-30T17:49:09.000000Z"},{"id":6,"name":"Hyman Graham","email":"weldon02@yahoo.com","email_verified_at":null,"created_at":"2024-08-30T17:49:08.000000Z","updated_at":"2024-08-30T17:49:08.000000Z"},{"id":7,"name":"Thurman Douglas","email":"hallie.cremin@mayer.biz","email_verified_at":null,"created_at":"2024-08-30T17:49:08.000000Z","updated_at":"2024-08-30T17:49:08.000000Z"},{"id":8,"name":"Mrs. Margaret Lang","email":"watsica.cassandre@ortiz.com","email_verified_at":null,"created_at":"2024-08-30T17:49:08.000000Z","updated_at":"2024-08-30T17:49:08.000000Z"},{"id":2,"name":"Novella Hudson","email":"uhackett@emard.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":3,"name":"Karley Schmitt","email":"buster59@gmail.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":4,"name":"Christop Johnston II","email":"johann02@mante.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":5,"name":"Delores O'Hara","email":"vbernier@gmail.com","email_verified_at":null,"created_at":"2024-08-30T17:49:07.000000Z","updated_at":"2024-08-30T17:49:07.000000Z"},{"id":1,"name":"Admin","email":"admin@gmail.com","email_verified_at":null,"created_at":"2024-08-30T14:11:52.000000Z","updated_at":"2024-08-30T14:11:52.000000Z"}]
+
         // Get table name
         $table_name = (new $this->models)->getTable();
 
@@ -76,7 +79,14 @@ class SyncTableFromServerJob implements ShouldQueue
 
         if (isset($response['status']) && $response['status'] == 'Data retrieved') {
             if (isset($response['data'])) {
-                ModelsServices::storeDataToDatabase($this->model_definition, $response['data'], $this->plugin_ids, $this->sync_config);
+                // Save the data to the database
+                ModelsServices::storeDataToDatabase(
+                    $response['primary_key'], 
+                    $this->model_definition, 
+                    $response['data'], 
+                    $this->plugin_ids, 
+                    $this->sync_config
+                );
             }
         }
 
