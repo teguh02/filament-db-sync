@@ -1,11 +1,7 @@
-# This package allow sync two different laravel filament app db
+![Putih Biru Abstrak Seminar Proposal Presentasi](https://github.com/user-attachments/assets/ecc1924a-c9e6-4723-908c-20712bc13059)
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/teguh02/filament-db-sync.svg?style=flat-square)](https://packagist.org/packages/teguh02/filament-db-sync)
 [![Total Downloads](https://img.shields.io/packagist/dt/teguh02/filament-db-sync.svg?style=flat-square)](https://packagist.org/packages/teguh02/filament-db-sync)
-
-
-
-This package allow sync two different laravel filament app db
 
 ## Installation
 
