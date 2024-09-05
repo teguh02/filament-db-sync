@@ -39,6 +39,19 @@ return [
         'included' => [
             // App\Models\User::class,
         ],
+
+        /**
+         * The column to be used as the key
+         * when syncing data
+         */
+        'column_as_key' => [
+            // class => column
+            // App\Models\User::class => 'email',
+
+            // or you can use the table name
+            // table_name => column
+            // 'users' => 'email',
+        ],
     ],
 
     /**
