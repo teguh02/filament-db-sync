@@ -81,10 +81,10 @@ class SyncTableFromServerJob implements ShouldQueue
             if (isset($response['data'])) {
                 // Save the data to the database
                 ModelsServices::storeDataToDatabase(
-                    $response['primary_key'], 
-                    $this->model_definition, 
-                    $response['data'], 
-                    $this->plugin_ids, 
+                    $response['primary_key'],
+                    $this->model_definition,
+                    $response['data'],
+                    $this->plugin_ids,
                     $this->sync_config
                 );
             }

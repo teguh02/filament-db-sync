@@ -142,9 +142,6 @@ class ModelsServices
 
     /**
      * Get the table primary key from the config
-     *
-     * @param string $table_name
-     * @return string
      */
     public static function getTablePrimaryKeyFromConfig(string $table_name): string
     {
@@ -155,7 +152,7 @@ class ModelsServices
             if (class_exists($key)) {
                 $tables_keys[(new $key)->getTable()] = $value;
             } else {
-                $tables_keys[$key] = $value;  
+                $tables_keys[$key] = $value;
             }
         }
 
