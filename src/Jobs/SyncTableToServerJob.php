@@ -40,8 +40,6 @@ class SyncTableToServerJob implements ShouldQueue
 
     protected $sync_token;
 
-    protected $column_as_key;
-
     // Used for receiving data from the sync host and saving it to the database
     protected $api_receive;
 
@@ -58,7 +56,6 @@ class SyncTableToServerJob implements ShouldQueue
 
         $this->sync_host = Config::get('db_sync.sync_host');
         $this->sync_token = Config::get('db_sync.auth_token');
-        $this->column_as_key = Config::get('db_sync.models.column_as_key');
 
         $this->api_receive = '/' . str_replace(config('app.url'), '', Route::getRoutes()->getByName('api.filament-db-receive')->uri());
     }
