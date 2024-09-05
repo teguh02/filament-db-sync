@@ -82,6 +82,7 @@ class Items extends Model
 ```
 
 ### db_sync.php config
+For the plugins config, you can adjust manually as you needs.
 ```php
 <?php
 
@@ -131,7 +132,7 @@ return [
          */
         'column_as_key' => [
             // class => column
-            // App\Models\User::class => 'email',
+            App\Models\User::class => 'email',
 
             // or you can use the table name
             // table_name => column
