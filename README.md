@@ -51,14 +51,6 @@ class Items extends Model
 {
     use HasFactory;
 
-    // Define the table property 
-    // if the table name is different
-    // protected $table = 'items';
-
-    // Define the primary key property
-    // if the primary key is different
-    // protected $primaryKey = 'id';
-
     // Define the fillable property to 
     // allow mass assignment on the model
     // and the database sync process
@@ -154,6 +146,21 @@ return [
         'duplicate_data_action' => env('DUPLICATE_DATA_ACTION', 'update'),
     ],
 ];
+```
+
+### Sync Env Configuration
+Please set your env configuration following below, for example we have 2 different server below. Server 1 app domain is server1.com and then server 2 domain is server2.com
+
+On the Server 1 : 
+```bash
+SYNC_TOKEN=FUswndOCKEm5rAKzgqFDsXZ5euWhA535tOzgE00n9tuP4IsofFslPM5VgtrT
+SYNC_HOST=http://server2.com
+```
+
+On the Server 2 :
+```bash
+SYNC_TOKEN=FUswndOCKEm5rAKzgqFDsXZ5euWhA535tOzgE00n9tuP4IsofFslPM5VgtrT
+SYNC_HOST=http://server1.com
 ```
 
 ### Queue configuration
