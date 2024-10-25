@@ -235,15 +235,24 @@ class ModelsServices
 
                             foreach ($schema as $column) {
                                 if (in_array($column['name'], ['created_at', 'updated_at'])) {
-                                    $data[$column['name']] = Carbon::parse($model_data[$column['name']]) ->format('Y-m-d H:i:s') ?? now();
+                                    $data[$column['name']] = Carbon::parse($model_data[$column['name']])->format('Y-m-d H:i:s') ?? now();
                                 } else {
                                     $data[$column['name']] = $model_data[$column['name']] ?? null;
                                 }
                             }
 
                             // Check if the data not have timestamp
+<<<<<<< HEAD
                             if (! isset($data['created_at']) or blank($data['created_at'])) {$data['created_at'] = now() -> format('Y-m-d H:i:s');}
                             if (! isset($data['updated_at']) or blank($data['updated_at'])) {$data['updated_at'] = now() -> format('Y-m-d H:i:s');}
+=======
+                            if (! isset($data['created_at'])) {
+                                $data['created_at'] = now();
+                            }
+                            if (! isset($data['updated_at'])) {
+                                $data['updated_at'] = now();
+                            }
+>>>>>>> b4b8c817cb1599a85d8ed1bc1de6149d4e9bb2fa
 
                             Log::info('[' . $plugin_ids . '] Data to be updated: ' . json_encode($data));
 
@@ -261,15 +270,24 @@ class ModelsServices
 
                             foreach ($schema as $column) {
                                 if (in_array($column['name'], ['created_at', 'updated_at'])) {
-                                    $data[$column['name']] = Carbon::parse($model_data[$column['name']]) ->format('Y-m-d H:i:s') ?? now();
+                                    $data[$column['name']] = Carbon::parse($model_data[$column['name']])->format('Y-m-d H:i:s') ?? now();
                                 } else {
                                     $data[$column['name']] = $model_data[$column['name']] ?? null;
                                 }
                             }
 
                             // Check if the data not have timestamp
+<<<<<<< HEAD
                             if (! isset($data['created_at']) or blank($data['created_at'])) {$data['created_at'] = now() -> format('Y-m-d H:i:s');}
                             if (! isset($data['updated_at']) or blank($data['updated_at'])) {$data['updated_at'] = now() -> format('Y-m-d H:i:s');}
+=======
+                            if (! isset($data['created_at'])) {
+                                $data['created_at'] = now();
+                            }
+                            if (! isset($data['updated_at'])) {
+                                $data['updated_at'] = now();
+                            }
+>>>>>>> b4b8c817cb1599a85d8ed1bc1de6149d4e9bb2fa
 
                             Log::info('[' . $plugin_ids . '] Data to be inserted: ' . json_encode($data));
 
@@ -292,15 +310,24 @@ class ModelsServices
 
                         foreach ($schema as $column) {
                             if (in_array($column['name'], ['created_at', 'updated_at'])) {
-                                $data[$column['name']] = Carbon::parse($model_data[$column['name']]) ->format('Y-m-d H:i:s') ?? now();
+                                $data[$column['name']] = Carbon::parse($model_data[$column['name']])->format('Y-m-d H:i:s') ?? now();
                             } else {
                                 $data[$column['name']] = $model_data[$column['name']] ?? null;
                             }
                         }
 
                         // Check if the data not have timestamp
+<<<<<<< HEAD
                         if (! isset($data['created_at']) or blank($data['created_at'])) {$data['created_at'] = now() -> format('Y-m-d H:i:s');}
                         if (! isset($data['updated_at']) or blank($data['updated_at'])) {$data['updated_at'] = now() -> format('Y-m-d H:i:s');}
+=======
+                        if (! isset($data['created_at'])) {
+                            $data['created_at'] = now();
+                        }
+                        if (! isset($data['updated_at'])) {
+                            $data['updated_at'] = now();
+                        }
+>>>>>>> b4b8c817cb1599a85d8ed1bc1de6149d4e9bb2fa
 
                         // Insert the data
                         Log::info('[' . $plugin_ids . '] Data to be inserted: ' . json_encode($data));
