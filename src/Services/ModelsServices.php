@@ -242,8 +242,8 @@ class ModelsServices
                             }
 
                             // Check if the data not have timestamp
-                            if (! isset($data['created_at'])) {$data['created_at'] = now();}
-                            if (! isset($data['updated_at'])) {$data['updated_at'] = now();}
+                            if (! isset($data['created_at']) or blank($data['created_at'])) {$data['created_at'] = now() -> format('Y-m-d H:i:s');}
+                            if (! isset($data['updated_at']) or blank($data['updated_at'])) {$data['updated_at'] = now() -> format('Y-m-d H:i:s');}
 
                             Log::info('[' . $plugin_ids . '] Data to be updated: ' . json_encode($data));
 
@@ -268,8 +268,8 @@ class ModelsServices
                             }
 
                             // Check if the data not have timestamp
-                            if (! isset($data['created_at'])) {$data['created_at'] = now();}
-                            if (! isset($data['updated_at'])) {$data['updated_at'] = now();}
+                            if (! isset($data['created_at']) or blank($data['created_at'])) {$data['created_at'] = now() -> format('Y-m-d H:i:s');}
+                            if (! isset($data['updated_at']) or blank($data['updated_at'])) {$data['updated_at'] = now() -> format('Y-m-d H:i:s');}
 
                             Log::info('[' . $plugin_ids . '] Data to be inserted: ' . json_encode($data));
 
@@ -299,8 +299,8 @@ class ModelsServices
                         }
 
                         // Check if the data not have timestamp
-                        if (! isset($data['created_at'])) {$data['created_at'] = now();}
-                        if (! isset($data['updated_at'])) {$data['updated_at'] = now();}
+                        if (! isset($data['created_at']) or blank($data['created_at'])) {$data['created_at'] = now() -> format('Y-m-d H:i:s');}
+                        if (! isset($data['updated_at']) or blank($data['updated_at'])) {$data['updated_at'] = now() -> format('Y-m-d H:i:s');}
 
                         // Insert the data
                         Log::info('[' . $plugin_ids . '] Data to be inserted: ' . json_encode($data));
