@@ -2,6 +2,7 @@
 
 namespace Teguh02\FilamentDbSync\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -233,8 +234,16 @@ class ModelsServices
                             $data = [];
 
                             foreach ($schema as $column) {
-                                $data[$column['name']] = $model_data[$column['name']] ?? null;
+                                if (in_array($column['name'], ['created_at', 'updated_at'])) {
+                                    $data[$column['name']] = Carbon::parse($model_data[$column['name']]) ->format('Y-m-d H:i:s') ?? now();
+                                } else {
+                                    $data[$column['name']] = $model_data[$column['name']] ?? null;
+                                }
                             }
+
+                            // Check if the data not have timestamp
+                            if (! isset($data['created_at'])) {$data['created_at'] = now();}
+                            if (! isset($data['updated_at'])) {$data['updated_at'] = now();}
 
                             Log::info('[' . $plugin_ids . '] Data to be updated: ' . json_encode($data));
 
@@ -251,8 +260,16 @@ class ModelsServices
                             $data['id'] = $db->orderBy('id', 'desc')->first()?->id + 1 ?? 1;
 
                             foreach ($schema as $column) {
-                                $data[$column['name']] = $model_data[$column['name']] ?? null;
+                                if (in_array($column['name'], ['created_at', 'updated_at'])) {
+                                    $data[$column['name']] = Carbon::parse($model_data[$column['name']]) ->format('Y-m-d H:i:s') ?? now();
+                                } else {
+                                    $data[$column['name']] = $model_data[$column['name']] ?? null;
+                                }
                             }
+
+                            // Check if the data not have timestamp
+                            if (! isset($data['created_at'])) {$data['created_at'] = now();}
+                            if (! isset($data['updated_at'])) {$data['updated_at'] = now();}
 
                             Log::info('[' . $plugin_ids . '] Data to be inserted: ' . json_encode($data));
 
@@ -274,8 +291,16 @@ class ModelsServices
                         $data['id'] = $db->orderBy('id', 'desc')->first()?->id + 1 ?? 1;
 
                         foreach ($schema as $column) {
-                            $data[$column['name']] = $model_data[$column['name']] ?? null;
+                            if (in_array($column['name'], ['created_at', 'updated_at'])) {
+                                $data[$column['name']] = Carbon::parse($model_data[$column['name']]) ->format('Y-m-d H:i:s') ?? now();
+                            } else {
+                                $data[$column['name']] = $model_data[$column['name']] ?? null;
+                            }
                         }
+
+                        // Check if the data not have timestamp
+                        if (! isset($data['created_at'])) {$data['created_at'] = now();}
+                        if (! isset($data['updated_at'])) {$data['updated_at'] = now();}
 
                         // Insert the data
                         Log::info('[' . $plugin_ids . '] Data to be inserted: ' . json_encode($data));
